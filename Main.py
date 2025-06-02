@@ -92,7 +92,7 @@ def cek_dan_install_ytdlp():
             return False
 
 def buat_folder_download():
-    folder = "youtubedownload"
+    folder = "web_video_download"
     os.makedirs(folder, exist_ok=True)
     return folder
 
