@@ -148,13 +148,14 @@ def download_video(url, folder, format_id=None):
     """
     Download satu video.
     Jika format_id None, otomatis pilih kualitas terbaik (untuk banyak video).
+    Return: "success" jika berhasil, "exists" jika file sudah ada, "failed" jika gagal.
     """
     if cek_file_sudah_ada(url, folder):
         print("\n⚠ Video sudah ada di folder download")
-        return True
+        return "exists"
     ydl_opts = {
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' if not format_id else format_id,
-        'outtmpl': f'{folder}/%(title)s-%(id)s.%(ext)s', # Nama file unik
+        'outtmpl': f'{folder}/%(title)s-%(id)s.%(ext)s',  # Nama file unik
         'progress_hooks': [progress_hook],
         'quiet': True,
         'merge_output_format': 'mp4',
@@ -163,12 +164,12 @@ def download_video(url, folder, format_id=None):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             print("\n✓ Download berhasil!")
-            return True
+            return "success"
     except Exception as e:
         print(f"\n✗ Gagal download: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        return "failed"
 
 def progress_hook(d):
     """Menampilkan progress bar sederhana di terminal"""
@@ -203,8 +204,10 @@ def download_banyak_terbaik(folder, platform_domains):
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{len(urls)}] Download: {url}")
         result = download_video(url, folder)  # format_id=None otomatis pilih terbaik
-        if result:
+        if result == "success":
             print("✓ Berhasil")
+        elif result == "exists":
+            print("⚠ File sudah ada, download dilewati")
         else:
             print("✗ Gagal")
     print("\nSEMUA PROSES SELESAI.")
@@ -260,8 +263,11 @@ def main():
                     continue
             hapus_layar()
             print("Memulai download...")
-            if download_video(url, folder, format_id):
+            result = download_video(url, folder, format_id)
+            if result == "success":
                 print("File tersimpan di:", os.path.abspath(folder))
+            elif result == "exists":
+                print("File sudah ada di folder download.")
             input("Tekan Enter untuk kembali ke menu utama...")
         else:
             # Download banyak video kualitas terbaik otomatis
