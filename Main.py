@@ -15,7 +15,7 @@ def auto_update_script():
         with open(local_file, 'rb') as f:
             current_code = f.read()
         if current_code != new_code:
-            print("🔄 Ada pembaruan script tersedia di GitHub.")
+            print("🔄 terdapat pembaruan script tersedia di GitHub.")
             jawab = input("Apakah Anda ingin memperbarui script sekarang? (y/n): ")
             if jawab.lower() == "y":
                 with open(local_file, 'wb') as f:
