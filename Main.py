@@ -1,5 +1,36 @@
-import os
+import urllib.request
 import sys
+import os
+
+def auto_update_script():
+    url = 'https://raw.githubusercontent.com/MiftahulKhoiri/Download_video_via_cli/main/Main.py'
+    local_file = os.path.abspath(__file__)
+
+    try:
+        # Ambil script terbaru dari GitHub
+        with urllib.request.urlopen(url) as response:
+            new_code = response.read()
+
+        # Bandingkan dengan file lokal
+        with open(local_file, 'rb') as f:
+            current_code = f.read()
+        if current_code != new_code:
+            print("🔄 Ada pembaruan script tersedia di GitHub.")
+            jawab = input("Apakah Anda ingin memperbarui script sekarang? (y/n): ")
+            if jawab.lower() == "y":
+                with open(local_file, 'wb') as f:
+                    f.write(new_code)
+                print("✅ Script sudah diperbarui! Silakan jalankan ulang script ini.")
+                sys.exit(0)
+            else:
+                print("Lewati pembaruan. Anda menjalankan versi lokal.")
+        else:
+            print("Script sudah versi terbaru.\n")
+    except Exception as e:
+        print(f"Gagal memeriksa pembaruan: {e}")
+
+auto_update_script()
+
 import subprocess
 from time import sleep
 
@@ -10,11 +41,9 @@ except ImportError:
     yt_dlp = None
 
 def hapus_layar():
-    """Membersihkan layar terminal agar tampilan lebih rapi"""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def cek_dan_install_ffmpeg():
-    """Memeriksa dan menginstall FFmpeg jika belum ada"""
     try:
         subprocess.run(['ffmpeg', '-version'],
                       stdout=subprocess.DEVNULL,
@@ -45,7 +74,6 @@ def cek_dan_install_ffmpeg():
             return False
 
 def cek_dan_install_ytdlp():
-    """Memeriksa dan menginstall yt-dlp jika belum ada"""
     global yt_dlp
     try:
         import yt_dlp
@@ -64,13 +92,11 @@ def cek_dan_install_ytdlp():
             return False
 
 def buat_folder_download():
-    """Membuat folder download jika belum ada"""
     folder = "youtubedownload"
     os.makedirs(folder, exist_ok=True)
     return folder
 
 def pilih_platform():
-    """Menampilkan menu pilihan platform video"""
     hapus_layar()
     print("╔══════════════════════════╗")
     print("║   PILIH PLATFORM VIDEO   ║")
@@ -87,7 +113,6 @@ def pilih_platform():
         print("Pilihan tidak valid! Silakan pilih 1-4")
 
 def pilih_mode_download():
-    """Menampilkan pilihan mode download (satu/banyak) setelah pilih platform"""
     print("\n╔══════════════════════════╗")
     print("║        PILIH MODE        ║")
     print("╠══════════════════════════╣")
@@ -101,7 +126,6 @@ def pilih_mode_download():
         print("Pilihan tidak valid! Silakan pilih 1-2")
 
 def pilih_resolusi(url):
-    """Menampilkan daftar resolusi video yang tersedia (khusus YouTube & Facebook)"""
     hapus_layar()
     print("Mengambil informasi video...")
     ydl_opts = {'quiet': True}
@@ -134,7 +158,6 @@ def pilih_resolusi(url):
         return None
 
 def cek_file_sudah_ada(url, folder):
-    """Cek apakah file sudah ada di folder download untuk menghindari duplikat"""
     try:
         with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -145,17 +168,12 @@ def cek_file_sudah_ada(url, folder):
         return False
 
 def download_video(url, folder, format_id=None):
-    """
-    Download satu video.
-    Jika format_id None, otomatis pilih kualitas terbaik (untuk banyak video).
-    Return: "success" jika berhasil, "exists" jika file sudah ada, "failed" jika gagal.
-    """
     if cek_file_sudah_ada(url, folder):
         print("\n⚠ Video sudah ada di folder download")
         return "exists"
     ydl_opts = {
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' if not format_id else format_id,
-        'outtmpl': f'{folder}/%(title)s-%(id)s.%(ext)s',  # Nama file unik
+        'outtmpl': f'{folder}/%(title)s-%(id)s.%(ext)s',
         'progress_hooks': [progress_hook],
         'quiet': True,
         'merge_output_format': 'mp4',
@@ -172,7 +190,6 @@ def download_video(url, folder, format_id=None):
         return "failed"
 
 def progress_hook(d):
-    """Menampilkan progress bar sederhana di terminal"""
     if d['status'] == 'downloading':
         percent = d.get('_percent_str', '?')
         print(f"\rSedang download: {percent} selesai", end='', flush=True)
@@ -180,11 +197,6 @@ def progress_hook(d):
         print("\rProses download selesai!".ljust(50))
 
 def download_banyak_terbaik(folder, platform_domains):
-    """
-    Download banyak video sekaligus.
-    User memasukkan URL satu per satu.
-    Download otomatis kualitas terbaik.
-    """
     urls = []
     print("Masukkan alamat URL video satu per satu.")
     print("Jika sudah selesai, cukup tekan Enter tanpa mengetik apa-apa.")
@@ -203,7 +215,7 @@ def download_banyak_terbaik(folder, platform_domains):
     print(f"\nMulai mendownload {len(urls)} video secara otomatis (format terbaik)...\n")
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{len(urls)}] Download: {url}")
-        result = download_video(url, folder)  # format_id=None otomatis pilih terbaik
+        result = download_video(url, folder)
         if result == "success":
             print("✓ Berhasil")
         elif result == "exists":
@@ -214,7 +226,6 @@ def download_banyak_terbaik(folder, platform_domains):
     input("Tekan Enter untuk kembali ke menu utama...")
 
 def main():
-    """Fungsi utama program"""
     hapus_layar()
     print("Pastikan sudah install yt-dlp (pip install yt-dlp) dan ffmpeg.")
     print("Script akan mencoba menginstall otomatis jika belum ada.")
@@ -227,7 +238,6 @@ def main():
         input("Tekan Enter untuk melanjutkan dengan risiko video tanpa suara...")
     folder = buat_folder_download()
 
-    # Platform dan domain yang didukung
     platforms = {
         '1': ['youtube.com', 'youtu.be'],
         '2': ['facebook.com', 'fb.watch'],
@@ -242,7 +252,6 @@ def main():
 
         mode = pilih_mode_download()
         if mode == '1':
-            # Download satu video
             while True:
                 hapus_layar()
                 url = input("Masukkan URL video: ").strip()
@@ -255,7 +264,6 @@ def main():
                 print(f"URL tidak valid! Pastikan URL dari {', '.join(platforms[pilihan])}")
                 sleep(2)
             format_id = None
-            # Pilih resolusi untuk YouTube/Facebook, Twitter otomatis terbaik
             if pilihan in ['1', '2']:
                 format_id = pilih_resolusi(url)
                 if not format_id:
@@ -270,7 +278,6 @@ def main():
                 print("File sudah ada di folder download.")
             input("Tekan Enter untuk kembali ke menu utama...")
         else:
-            # Download banyak video kualitas terbaik otomatis
             hapus_layar()
             print("MODE DOWNLOAD BANYAK VIDEO")
             download_banyak_terbaik(folder, platforms[pilihan])
