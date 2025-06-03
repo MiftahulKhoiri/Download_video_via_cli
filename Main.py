@@ -137,6 +137,15 @@ def pilih_resolusi(url):
             if not formats:
                 print("Tidak ada format video+audio yang tersedia")
                 return None
+            # Jika hanya ada 1 pilihan resolusi, download otomatis
+            if len(formats) == 1:
+                fmt = formats[0]
+                res = fmt.get('resolution', 'Unknown')
+                ext = fmt.get('ext', 'Unknown')
+                print(f"\nINFO: Hanya ada 1 resolusi ({res}, {ext}). Download otomatis...")
+                sleep(2)
+                return fmt['format_id']
+            # Jika ada beberapa pilihan, tampilkan pilihan
             print("\n╔══════════════════════════════╗")
             print("║      PILIH RESOLUSI VIDEO    ║")
             print("╠══════════════════════════════╣")
