@@ -233,9 +233,10 @@ def download_banyak_terbaik(folder, platform_domains):
 
 def main():
     hapus_layar()
-    
+    print (" SELAMAT DATANG DI APLIKASI")
+    print ("○ WEB VIDEO DOWNLOAD ○")
     print("-" * 40)
-    sleep(2)
+    sleep(4)
     folder = buat_folder_download()
 
     platforms = {
