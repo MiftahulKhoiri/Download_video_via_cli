@@ -4,6 +4,8 @@ import os
 import subprocess
 
 def auto_update_script():
+    print (" melakukan pengecekan script ")
+    sleep (2)
     url = 'https://raw.githubusercontent.com/MiftahulKhoiri/Download_video_via_cli/main/Main.py'
     local_file = os.path.abspath(__file__)
     try:
