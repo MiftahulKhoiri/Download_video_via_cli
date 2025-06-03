@@ -5,6 +5,7 @@ import subprocess
 from time import sleep
 
 def auto_update_script():
+    hapus_layar()
     print (" melakukan pengecekan script ")
     sleep(2)
     url = 'https://raw.githubusercontent.com/MiftahulKhoiri/Download_video_via_cli/main/Main.py'
