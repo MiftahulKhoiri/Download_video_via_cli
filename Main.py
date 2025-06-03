@@ -136,7 +136,7 @@ def pilih_resolusi(url):
                        if f.get('vcodec') != 'none' and f.get('acodec') != 'none']
             if not formats:
                 print("Tidak ada format video+audio yang tersedia")
-                return None
+                return None, None, None
             # Jika hanya ada 1 pilihan resolusi, download otomatis
             if len(formats) == 1:
                 fmt = formats[0]
@@ -144,7 +144,7 @@ def pilih_resolusi(url):
                 ext = fmt.get('ext', 'Unknown')
                 print(f"\nINFO: Hanya ada 1 resolusi ({res}, {ext}). Download otomatis...")
                 sleep(2)
-                return fmt['format_id']
+                return fmt['format_id'], res, ext
             # Jika ada beberapa pilihan, tampilkan pilihan
             print("\n╔══════════════════════════════╗")
             print("║      PILIH RESOLUSI VIDEO    ║")
@@ -155,16 +155,22 @@ def pilih_resolusi(url):
                 print(f"║ {i+1}. {res.ljust(8)} ({ext.ljust(5)}) ║")
             print("╚══════════════════════════════╝")
             while True:
+                pilihan = input("\nPilih resolusi (nomor, atau Enter untuk batal): ").strip()
+                if pilihan == "":
+                    print("Batal memilih resolusi.")
+                    return None, None, None
                 try:
-                    pilihan = int(input("\nPilih resolusi (nomor): ")) - 1
-                    if 0 <= pilihan < len(formats):
-                        return formats[pilihan]['format_id']
+                    idx = int(pilihan) - 1
+                    if 0 <= idx < len(formats):
+                        res = formats[idx].get('resolution', 'Unknown')
+                        ext = formats[idx].get('ext', 'Unknown')
+                        return formats[idx]['format_id'], res, ext
                     print("Nomor tidak valid!")
                 except ValueError:
                     print("Harap masukkan angka!")
     except Exception as e:
         print(f"Error: {e}")
-        return None
+        return None, None, None
 
 def cek_file_sudah_ada(url, folder):
     try:
@@ -273,11 +279,15 @@ def main():
                 print(f"URL tidak valid! Pastikan URL dari {', '.join(platforms[pilihan])}")
                 sleep(2)
             format_id = None
+            res = None
+            ext = None
             if pilihan in ['1', '2']:
-                format_id = pilih_resolusi(url)
+                format_id, res, ext = pilih_resolusi(url)
                 if not format_id:
                     input("Tekan Enter untuk kembali...")
                     continue
+                print(f"\nDownload dimulai untuk resolusi: {res}, format: {ext}")
+                sleep(1)
             hapus_layar()
             print("Memulai download...")
             result = download_video(url, folder, format_id)
