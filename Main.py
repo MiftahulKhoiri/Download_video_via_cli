@@ -69,7 +69,7 @@ def cek_dan_install_modul():
 
 # -- Jalankan urutan: update -> cek modul -- #
 auto_update_script()
-cek_dan_install_modul()
+
 
 from time import sleep
 
@@ -232,6 +232,9 @@ def download_banyak_terbaik(folder, platform_domains):
     input("Tekan Enter untuk kembali ke menu utama...")
 
 def main():
+    hapus_layar()
+    cek_dan_install_modul()
+    sleep(3)
     hapus_layar()
     print (" SELAMAT DATANG DI APLIKASI")
     print ("○ WEB VIDEO DOWNLOAD ○")
