@@ -233,8 +233,7 @@ def download_banyak_terbaik(folder, platform_domains):
 
 def main():
     hapus_layar()
-    print("Pastikan sudah install yt-dlp (pip install yt-dlp) dan ffmpeg.")
-    print("Script akan mencoba menginstall otomatis jika belum ada.")
+    
     print("-" * 40)
     sleep(2)
     folder = buat_folder_download()
