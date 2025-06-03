@@ -1,17 +1,14 @@
 import urllib.request
 import sys
 import os
+import subprocess
 
 def auto_update_script():
     url = 'https://raw.githubusercontent.com/MiftahulKhoiri/Download_video_via_cli/main/Main.py'
     local_file = os.path.abspath(__file__)
-
     try:
-        # Ambil script terbaru dari GitHub
         with urllib.request.urlopen(url) as response:
             new_code = response.read()
-
-        # Bandingkan dengan file lokal
         with open(local_file, 'rb') as f:
             current_code = f.read()
         if current_code != new_code:
@@ -29,30 +26,28 @@ def auto_update_script():
     except Exception as e:
         print(f"Gagal memeriksa pembaruan: {e}")
 
-auto_update_script()
-
-import subprocess
-from time import sleep
-
-# Coba import yt_dlp, jika gagal akan di-handle di bawah
-try:
-    import yt_dlp
-except ImportError:
-    yt_dlp = None
-
-def hapus_layar():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def cek_dan_install_ffmpeg():
+def cek_dan_install_modul():
+    # Cek yt-dlp
+    print("Mengecek modul yt-dlp...")
     try:
-        subprocess.run(['ffmpeg', '-version'],
-                      stdout=subprocess.DEVNULL,
-                      stderr=subprocess.DEVNULL,
-                      check=True)
-        print("✓ FFmpeg sudah terinstall")
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("✗ FFmpeg tidak ditemukan, mencoba menginstall...")
+        import yt_dlp
+        print("yt-dlp sudah terinstall")
+    except ImportError:
+        print("yt-dlp belum terinstall. Menginstall yt-dlp...")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "yt-dlp"])
+            print("yt-dlp sudah terinstall")
+        except Exception as e:
+            print(f"Gagal install yt-dlp: {e}")
+            sys.exit(1)
+
+    # Cek ffmpeg
+    print("Mengecek modul ffmpeg...")
+    try:
+        subprocess.run(['ffmpeg', '-version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        print("ffmpeg sudah terinstall")
+    except Exception:
+        print("ffmpeg belum terinstall. Menginstall ffmpeg...")
         try:
             if os.name == 'nt':
                 print("\nUntuk Windows, silakan download FFmpeg dari:")
@@ -66,30 +61,26 @@ def cek_dan_install_ffmpeg():
                     os.system('sudo yum install -y ffmpeg')
                 elif os.system('which brew > /dev/null 2>&1') == 0:
                     os.system('brew install ffmpeg')
-            subprocess.run(['ffmpeg', '-version'], check=True)
-            print("✓ FFmpeg berhasil diinstall!")
-            return True
+            subprocess.run(['ffmpeg', '-version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            print("ffmpeg sudah terinstall")
         except Exception as e:
-            print(f"✗ Gagal menginstall FFmpeg: {e}")
-            return False
+            print(f"Gagal install ffmpeg: {e}")
+            print("Lanjut dengan risiko beberapa fitur tidak dapat berjalan.")
 
-def cek_dan_install_ytdlp():
-    global yt_dlp
-    try:
-        import yt_dlp
-        print("✓ yt-dlp sudah terinstall")
-        return True
-    except ImportError:
-        print("✗ yt-dlp tidak ditemukan, mencoba install otomatis...")
-        try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "yt-dlp"])
-            import yt_dlp as ytdlp_mod
-            yt_dlp = ytdlp_mod
-            print("✓ yt-dlp berhasil diinstall!")
-            return True
-        except Exception as e:
-            print(f"✗ Gagal install yt-dlp: {e}")
-            return False
+# -- Jalankan urutan: update -> cek modul -- #
+auto_update_script()
+cek_dan_install_modul()
+
+from time import sleep
+
+# Coba import yt_dlp, jika gagal akan di-handle di bawah
+try:
+    import yt_dlp
+except ImportError:
+    yt_dlp = None
+
+def hapus_layar():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def buat_folder_download():
     folder = "web_video_download"
@@ -246,11 +237,6 @@ def main():
     print("Script akan mencoba menginstall otomatis jika belum ada.")
     print("-" * 40)
     sleep(2)
-    if not cek_dan_install_ytdlp():
-        input("Tekan Enter untuk keluar...")
-        return
-    if not cek_dan_install_ffmpeg():
-        input("Tekan Enter untuk melanjutkan dengan risiko video tanpa suara...")
     folder = buat_folder_download()
 
     platforms = {
