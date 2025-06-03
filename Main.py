@@ -2,6 +2,7 @@ import urllib.request
 import sys
 import os
 import subprocess
+from time import sleep
 
 def auto_update_script():
     print (" melakukan pengecekan script ")
@@ -71,9 +72,6 @@ def cek_dan_install_modul():
 
 # -- Jalankan urutan: update -> cek modul -- #
 auto_update_script()
-
-
-from time import sleep
 
 # Coba import yt_dlp, jika gagal akan di-handle di bawah
 try:
