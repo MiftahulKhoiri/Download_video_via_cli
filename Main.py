@@ -4,6 +4,9 @@ import os
 import subprocess
 from time import sleep
 
+def hapus_layar():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def auto_update_script():
     hapus_layar()
     print (" melakukan pengecekan script ")
@@ -79,9 +82,6 @@ try:
     import yt_dlp
 except ImportError:
     yt_dlp = None
-
-def hapus_layar():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def buat_folder_download():
     folder = "web_video_download"
