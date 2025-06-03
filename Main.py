@@ -237,7 +237,7 @@ def main():
     sleep(3)
     hapus_layar()
     print (" SELAMAT DATANG DI APLIKASI")
-    print ("○ WEB VIDEO DOWNLOAD ○")
+    print ("   ○ WEB VIDEO DOWNLOAD ○")
     print("-" * 40)
     sleep(4)
     folder = buat_folder_download()
