@@ -234,6 +234,7 @@ def download_banyak_terbaik(folder, platform_domains):
 
 def main():
     hapus_layar()
+    print("Mendapatkan informasi modul yang di butuhkan ")
     cek_dan_install_modul()
     sleep(3)
     hapus_layar()
