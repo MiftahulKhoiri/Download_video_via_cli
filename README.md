@@ -18,4 +18,4 @@ Untuk mendownload video dengan mudah dari sumber alamat Web.
 
 7. ikuti script nya tinggal di isi alamat yang di inginkan 
 
-selamat bersenang 2 jika ada masalah tinggal kan pesan
+selamat bersenang 2 jika ada masalah tinggalkan pesan
