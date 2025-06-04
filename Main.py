@@ -175,9 +175,19 @@ def cek_file_sudah_ada(url, folder):
         return False
 
 def download_video(url, folder, format_id=None):
+    try:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+            info = ydl.extract_info(url, download=False)
+            filename = ydl.prepare_filename(info)
+            path_lengkap = os.path.join(folder, os.path.basename(filename))
+    except Exception:
+        filename = None
+        path_lengkap = None
+
     if cek_file_sudah_ada(url, folder):
         print("\n⚠ Video sudah ada di folder download")
-        return "exists"
+        return "exists", path_lengkap
+
     ydl_opts = {
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' if not format_id else format_id,
         'outtmpl': f'{folder}/%(title)s-%(id)s.%(ext)s',
@@ -189,12 +199,14 @@ def download_video(url, folder, format_id=None):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             print("\n✓ Download berhasil!")
-            return "success"
+            filename = ydl.prepare_filename(info)
+            path_lengkap = os.path.join(folder, os.path.basename(filename))
+            return "success", path_lengkap
     except Exception as e:
         print(f"\n✗ Gagal download: {e}")
         import traceback
         traceback.print_exc()
-        return "failed"
+        return "failed", None
 
 def progress_hook(d):
     if d['status'] == 'downloading':
@@ -222,11 +234,11 @@ def download_banyak_terbaik(folder, platform_domains):
     print(f"\nMulai mendownload {len(urls)} video secara otomatis (format terbaik)...\n")
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{len(urls)}] Download: {url}")
-        result = download_video(url, folder)
+        result, filename = download_video(url, folder)
         if result == "success":
-            print("✓ Berhasil")
+            print(f"✓ Download selesai: {os.path.basename(filename)} (disimpan di {os.path.abspath(folder)})")
         elif result == "exists":
-            print("⚠ File sudah ada, download dilewati")
+            print(f"⚠ File sudah ada: {os.path.basename(filename)} (ada di {os.path.abspath(folder)})")
         else:
             print("✗ Gagal")
     print("\nSEMUA PROSES SELESAI.")
@@ -281,11 +293,11 @@ def main():
                 sleep(1)
             hapus_layar()
             print("Memulai download...")
-            result = download_video(url, folder, format_id)
+            result, filename = download_video(url, folder, format_id)
             if result == "success":
-                print("File tersimpan di:", os.path.abspath(folder))
+                print(f"File tersimpan di: {filename}")
             elif result == "exists":
-                print("File sudah ada di folder download.")
+                print(f"File sudah ada di folder download: {filename}")
             input("Tekan Enter untuk kembali ke menu utama...")
         else:
             hapus_layar()
