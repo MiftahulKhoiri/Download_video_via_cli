@@ -231,7 +231,7 @@ def download_banyak_terbaik(folder, platform_domains):
         print(Fore.CYAN + f"\n[{i}/{len(urls)}] Download: {url}")
         result, filename = download_video(url, folder)
         hasil_download.append((result, filename))
-'No.':<4} {'Nama File':<35} Status")
+    print(f"{'No.':<4} {'Nama File':<35} Status")
     for idx, (status, fname) in enumerate(hasil_download, 1):
         warna = Fore.GREEN if status == "success" else (Fore.YELLOW if status == "exists" else Fore.RED)
         fname_disp = os.path.basename(fname) if fname else "-"
