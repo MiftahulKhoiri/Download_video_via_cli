@@ -34,6 +34,8 @@ def auto_update_script():
         print(f"Gagal memeriksa pembaruan: {e}")
 
 def cek_dan_install_modul():
+    print("Mendapatkan modul yang dibutuhkan ")
+    sleep (2)
     import importlib.util
 
     def install_if_needed(module_name, pip_name=None):
