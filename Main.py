@@ -34,6 +34,7 @@ def auto_update_script():
         print(f"Gagal memeriksa pembaruan: {e}")
 
 def cek_dan_install_modul():
+    hapus_layar()
     print("Mendapatkan modul yang dibutuhkan ")
     sleep (2)
     import importlib.util
@@ -243,6 +244,7 @@ def download_banyak_terbaik(folder, platform_domains):
     input(Fore.LIGHTBLUE_EX + "Tekan Enter untuk kembali ke menu utama...")
 
 def main():
+    sleep(2)
     hapus_layar()
     print_header()
     print(Fore.YELLOW + "Mendapatkan informasi modul yang dibutuhkan ...")
